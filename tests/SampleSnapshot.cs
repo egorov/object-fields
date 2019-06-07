@@ -1,11 +1,6 @@
 namespace Tests
 {
-  public enum Gender
-  {
-    Female,
-    Male
-  }
-  public class Sample
+  public class SampleSnapshot
   {
     public int id { get; set; }
     public string name { get; set; }
