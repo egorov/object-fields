@@ -12,7 +12,9 @@ namespace Tests
     [TestInitialize]
     public void setUp()
     {
-      this.compare = new SameFieldsValuesComparerImpl();
+      this.compare = new SameFieldsValuesComparerImpl(
+        new BuiltInTypesEqualityComparerImpl()
+      );
     }
 
     [TestMethod]
@@ -20,8 +22,11 @@ namespace Tests
     {
       Sample standard = new Sample();
       Sample sample = new Sample();
+      Another another = new Another();
 
       Assert.IsTrue(this.compare.areEquals(standard, sample));
+      Assert.IsTrue(this.compare.areEquals(sample, another));
+      Assert.IsTrue(this.compare.areEquals(standard, another));
     }
 
     [TestMethod]
@@ -29,8 +34,19 @@ namespace Tests
     {
       Sample standard = new Sample() { name = "jack" };
       Sample sample = new Sample();
+      Another another = new Another() { name = "john" };
 
       Assert.IsFalse(this.compare.areEquals(standard, sample));
+      Assert.IsFalse(this.compare.areEquals(another, sample));
+      Assert.IsFalse(this.compare.areEquals(another, standard));
+    }
+
+    [TestMethod]
+    public void should_throw()
+    {
+      Action nullCompare = () => new SameFieldsValuesComparerImpl(null);
+
+      Assert.ThrowsException<ArgumentNullException>(nullCompare);
     }
   }
 }

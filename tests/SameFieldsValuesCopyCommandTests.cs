@@ -13,13 +13,15 @@ namespace Tests
     [TestInitialize]
     public void setUp()
     {
-      this.command = new SameFieldsValuesCopyCommandImpl();
+      this.command = new SameFieldsValuesCopyCommandImpl(
+        new BuiltInTypesEqualityComparerImpl()
+      );
     }
 
     [TestMethod]
-    public void should_copy_values()
+    public void should_copy_all_values()
     {
-      Sample record = this.MakeSample();
+      Sample record = this.makeSample();
       SampleSnapshot snapshot = new SampleSnapshot();
 
       this.command.setSource(record);
@@ -38,7 +40,7 @@ namespace Tests
       }
     }
 
-    private Sample MakeSample()
+    private Sample makeSample()
     {
       return new Sample()
       {
@@ -48,6 +50,21 @@ namespace Tests
         gender = Gender.Male,
         age = 20.5M
       };
+    }
+
+    [TestMethod]
+    public void should_copy_just_same_fields()
+    {
+      Sample one = this.makeSample();
+      Another another = new Another();
+
+      this.command.setSource(one);
+      this.command.setDestination(another);
+      this.command.execute();
+
+      Assert.AreEqual(another.name, one.name);
+      Assert.AreEqual(0, another.Id);
+      Assert.IsFalse(another.isEnabled);
     }
 
     [TestMethod]
@@ -90,6 +107,15 @@ namespace Tests
       Action destinationWasNotSet = () => this.command.execute();
       Assert.ThrowsException<InvalidOperationException>(destinationWasNotSet);
     }
+
+    [TestMethod]
+    public void should_throw_on_construction()
+    {
+      Action nullCompare = () => new SameFieldsValuesCopyCommandImpl(null);
+
+      Assert.ThrowsException<ArgumentNullException>(nullCompare);
+    }
+
 
     [TestMethod]
     public void should_not_throw()

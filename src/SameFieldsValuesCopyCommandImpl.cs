@@ -6,9 +6,15 @@ namespace ObjectFields
   public class SameFieldsValuesCopyCommandImpl : SameFieldsValuesCopyCommand
   {
     private BuiltInTypesEqualityComparer compare;
-    public SameFieldsValuesCopyCommandImpl()
+    public SameFieldsValuesCopyCommandImpl() 
+      : this(new BuiltInTypesEqualityComparerImpl()) { }
+
+    public SameFieldsValuesCopyCommandImpl(BuiltInTypesEqualityComparer compare)
     {
-      this.compare = new BuiltInTypesEqualityComparerImpl();
+      if(compare == null)
+        throw new ArgumentNullException(nameof(compare));
+
+      this.compare = compare;
     }
 
     private object dst;

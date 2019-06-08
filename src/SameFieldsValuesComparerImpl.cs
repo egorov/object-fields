@@ -8,8 +8,14 @@ namespace ObjectFields
     private BuiltInTypesEqualityComparer compare;
 
     public SameFieldsValuesComparerImpl()
+      : this(new BuiltInTypesEqualityComparerImpl()) { }
+
+    public SameFieldsValuesComparerImpl(BuiltInTypesEqualityComparer compare)
     {
-      this.compare = new BuiltInTypesEqualityComparerImpl();
+      if(compare == null)
+        throw new ArgumentNullException(nameof(compare));
+      
+      this.compare = compare;
     }
 
     public bool areEquals(object standard, object sample)
@@ -21,6 +27,9 @@ namespace ObjectFields
       {
         PropertyInfo smplProp = 
           sample.GetType().GetProperty(stdProp.Name, stdProp.PropertyType);
+
+        if(smplProp == null)
+          continue;
 
         object stdValue = stdProp.GetValue(standard);
         object smplValue = smplProp.GetValue(sample);
